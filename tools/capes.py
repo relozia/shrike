@@ -1,8 +1,14 @@
 # draws Shrike's capes into vanilla's cape layout at 8x (512x256). needs Pillow. run from the repo root:
 #   python tools/capes.py
 # layout, in 64x32 cape pixels: the cape box is 10x16x1 at (0,0), its outside (what people behind you see) is
-# x 1-11 y 1-17, the inside against your back x 12-22. the elytra box is 10x20x2 at (22,0) with its two big faces at
-# x 24-34 and x 36-46 (y 2-22). from behind you see the second one, both get the design so it's right either way
+# x 1-11 y 1-17, the inside against your back x 12-22. the elytra box is 10x20x2 at (22,0), big faces at x 24-34
+# and x 36-46 (y 2-22).
+# elytra notes, all of them learned the hard way:
+#   - RGBA because the cape renders with entitySolid, which throws alpha away, but the elytra goes through
+#     EquipmentLayerRenderer on armorCutoutNoCull, which doesn't
+#   - vanilla only ever draws x 36-46. x 24-34 is transparent, painting it put a second logo on your chest
+#   - left as a full rectangle the wing renders as a slab, so WING, vanilla's own silhouette, gets masked on last
+#   - no bird on the wing, both wings sample that one face so it shows twice, and folded they smear together
 import re
 import time
 from PIL import Image, ImageDraw
@@ -55,7 +61,7 @@ def bird(img, x, y, size, color, svg="tools/logo.svg"):
         for poly in flatten(d):
             dr.polygon([(a * k, b * k) for a, b in poly], fill=0 if cut else 255)
     m = m.resize((int(size), int(size)), Image.LANCZOS)
-    img.paste(Image.new("RGB", m.size, color), (int(x), int(y)), m)
+    img.paste(Image.new("RGBA", m.size, color + (255,)), (int(x), int(y)), m)
 
 
 def vgrad(img, box, top, bottom):
@@ -67,13 +73,54 @@ def vgrad(img, box, top, bottom):
 
 
 def base(fill, inside):
-    img = Image.new("RGB", (64 * S, 32 * S), fill)
+    img = Image.new("RGBA", (64 * S, 32 * S), fill + (255,))
     ImageDraw.Draw(img).rectangle([12 * S, 1 * S, 22 * S - 1, 17 * S - 1], fill=inside)
     return img
 
 
 OUTSIDE = (1, 1, 11, 17)
 WINGS = [(24, 2, 34, 22), (36, 2, 46, 22)]
+# the second one is the outside of the wing, the one anyone behind you looks at, and the only one vanilla draws
+
+# x 22-46, y 0-22 of vanilla's elytra, one char per cape pixel. its alpha is only ever 0 or 255 so this is exact
+WING = """
+.........#########......
+..........##............
+............########....
+............#########...
+.............#########..
+.............#########..
+.............#########..
+.............##########.
+.............##########.
+.............##########.
+.............##########.
+#.............##########
+#.............##########
+#.............##########
+#.............##########
+#.............##########
+#..............#########
+#..............#########
+#..............#########
+#...............########
+#...............########
+#................#######
+""".split()
+
+
+# cut the elytra down to the wing shape. has to run after everything else, a hem or a stripe drawn to the edge
+# of the 10x20 box would otherwise stick out past the taper
+def wings(img):
+    px = img.load()
+    for y, row in enumerate(WING):
+        for x, c in enumerate(row):
+            if c == "#":
+                continue
+            for yy in range(y * S, y * S + S):
+                for xx in range((22 + x) * S, (22 + x) * S + S):
+                    px[xx, yy] = (0, 0, 0, 0)
+    return img
 
 
 def rect(img, box, color):
@@ -89,9 +136,8 @@ def mark():
     rect(img, (1, 16.5, 11, 17), RUST)
     for x0, y0, x1, y1 in WINGS:
         vgrad(img, (x0, y0, x1, y1), (30, 36, 46), (16, 19, 25))
-        bird(img, x0 * S + 16, y0 * S + 40, 48, RUST)
         rect(img, (x0, y1 - 0.5, x1, y1), RUST)
-    return img
+    return wings(img)
 
 
 # dark, a thin accent stripe down each side, a small bird low on the back
@@ -105,7 +151,7 @@ def rust():
         rect(img, (x0 + 1, y0, x0 + 1.5, y1), RUST)
         rect(img, (x1 - 1.5, y0, x1 - 1, y1), RUST)
     bird(img, 1 * S + 24, 1 * S + 88, 32, RUST)
-    return img
+    return wings(img)
 
 
 # a dusk sky, deep blue down to orange, the bird dark against it
@@ -120,7 +166,7 @@ def dusk():
             a, b, f = sky[int(t)], sky[min(int(t) + 1, len(sky) - 1)], t - int(t)
             dr.line([(x0, yy), (x1 - 1, yy)], fill=tuple(round(a[j] + (b[j] - a[j]) * f) for j in range(3)))
     bird(img, 1 * S + 12, 1 * S + 30, 56, INK)
-    return img
+    return wings(img)
 
 
 # rows of soft feather chevrons in greys, the bottom edge dipped in orange
@@ -139,7 +185,7 @@ def feather():
             row += 1
         dr.rectangle([x0, y1 - 12, x1 - 1, y1 - 1], fill=RUST)
         dr.rectangle([x0, y1 - 16, x1 - 1, y1 - 13], fill=(150, 78, 44))
-    return img
+    return wings(img)
 
 
 # the K with a wing for its arm, big and orange on charcoal, an orange hem
@@ -148,11 +194,10 @@ def kwing():
     vgrad(img, OUTSIDE, (30, 36, 46), (16, 19, 25))
     bird(img, 1 * S + 12, 1 * S + 26, 56, RUST, "tools/marks/kwing.svg")
     rect(img, (1, 16.5, 11, 17), RUST)
-    # the elytra mirrors one wing onto the other, a lopsided mark comes out as a backwards pair, so just the hem there
     for x0, y0, x1, y1 in WINGS:
         vgrad(img, (x0, y0, x1, y1), (30, 36, 46), (16, 19, 25))
         rect(img, (x0, y1 - 0.5, x1, y1), RUST)
-    return img
+    return wings(img)
 
 
 # the front on stoop, tall and diving down the length of the back, on a slate fade
@@ -163,7 +208,7 @@ def stoop():
     bird(img, 1 * S, 1 * S + 22, 80, RUST, "tools/marks/stoop.svg")
     for x0, y0, x1, y1 in WINGS:
         rect(img, (x0, y1 - 0.5, x1, y1), RUST)
-    return img
+    return wings(img)
 
 
 # the side on dive cutting down across the back, night blue fading to charcoal
@@ -174,7 +219,7 @@ def dive():
     bird(img, 1 * S + 4, 1 * S + 50, 66, RUST, "tools/marks/dive.svg")
     for x0, y0, x1, y1 in WINGS:
         rect(img, (x0, y1 - 0.5, x1, y1), RUST)
-    return img
+    return wings(img)
 
 
 if __name__ == "__main__":
