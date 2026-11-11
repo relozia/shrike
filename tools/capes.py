@@ -8,7 +8,8 @@
 #     EquipmentLayerRenderer on armorCutoutNoCull, which doesn't
 #   - vanilla only ever draws x 36-46. x 24-34 is transparent, painting it put a second logo on your chest
 #   - left as a full rectangle the wing renders as a slab, so WING, vanilla's own silhouette, gets masked on last
-#   - no bird on the wing, both wings sample that one face so it shows twice, and folded they smear together
+#   - a mark on the wing is drawn once but shows twice, both wings sample that one face. wing_mark's spot is the
+#     only one where the two copies stay apart, higher up they meet in the middle as one smear, lower the taper eats
 import re
 import time
 from PIL import Image, ImageDraw
@@ -81,6 +82,7 @@ def base(fill, inside):
 OUTSIDE = (1, 1, 11, 17)
 WINGS = [(24, 2, 34, 22), (36, 2, 46, 22)]
 # the second one is the outside of the wing, the one anyone behind you looks at, and the only one vanilla draws
+OUTER = WINGS[1]
 
 # x 22-46, y 0-22 of vanilla's elytra, one char per cape pixel. its alpha is only ever 0 or 255 so this is exact
 WING = """
@@ -123,6 +125,14 @@ def wings(img):
     return img
 
 
+# the badge on the elytra, which the model turns into one per wing. small and low on purpose, see the header.
+# always the logo, never one of the lopsided marks, a mirrored wing only reads right with a symmetric one
+def wing_mark(img, box, color=None):
+    x0, y0, x1, y1 = box
+    size = 22
+    bird(img, x0 * S + ((x1 - x0) * S - size) / 2, y0 * S + 92, size, color or RUST)
+
+
 def rect(img, box, color):
     x0, y0, x1, y1 = box
     ImageDraw.Draw(img).rectangle([x0 * S, y0 * S, x1 * S - 1, y1 * S - 1], fill=color)
@@ -137,6 +147,7 @@ def mark():
     for x0, y0, x1, y1 in WINGS:
         vgrad(img, (x0, y0, x1, y1), (30, 36, 46), (16, 19, 25))
         rect(img, (x0, y1 - 0.5, x1, y1), RUST)
+    wing_mark(img, OUTER)
     return wings(img)
 
 
@@ -197,6 +208,7 @@ def kwing():
     for x0, y0, x1, y1 in WINGS:
         vgrad(img, (x0, y0, x1, y1), (30, 36, 46), (16, 19, 25))
         rect(img, (x0, y1 - 0.5, x1, y1), RUST)
+    wing_mark(img, OUTER)
     return wings(img)
 
 
@@ -208,6 +220,7 @@ def stoop():
     bird(img, 1 * S, 1 * S + 22, 80, RUST, "tools/marks/stoop.svg")
     for x0, y0, x1, y1 in WINGS:
         rect(img, (x0, y1 - 0.5, x1, y1), RUST)
+    wing_mark(img, OUTER)
     return wings(img)
 
 
@@ -219,6 +232,7 @@ def dive():
     bird(img, 1 * S + 4, 1 * S + 50, 66, RUST, "tools/marks/dive.svg")
     for x0, y0, x1, y1 in WINGS:
         rect(img, (x0, y1 - 0.5, x1, y1), RUST)
+    wing_mark(img, OUTER)
     return wings(img)
 
 
