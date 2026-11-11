@@ -29,6 +29,7 @@ import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.Display;
@@ -43,6 +44,7 @@ public class Cosmetics extends Module {
 	static Cosmetics INSTANCE;
 	private static final Path DIR = FabricLoader.getInstance().getConfigDir().resolve("shrike").resolve("capes");
 	private static final String NONE = "No pngs found";
+	private static final Identifier ELYTRA = Identifier.withDefaultNamespace("textures/entity/equipment/wings/elytra.png");
 
 	private final Setting.Toggle cape = add(new Setting.Toggle("Cape", true));
 	private final Setting.Toggle badge = add(new Setting.Toggle("Badge", true));
@@ -223,6 +225,7 @@ public class Cosmetics extends Module {
 				Notice.show("Cosmetics", f + " isn't a cape image, it has to be 2:1 like 64x32 or 512x256", 4000);
 				img.close();
 			} else {
+				wings(img);
 				Identifier id = Shrike.id("cape/custom_" + f.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_.-]", "_"));
 				Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(() -> "shrike cape " + f, img));
 				t = new ClientAsset.ResourceTexture(id, id);
@@ -233,5 +236,24 @@ public class Cosmetics extends Module {
 		}
 		loaded.put(f, t);
 		return t;
+	}
+
+	// a cape png is one flat rectangle, an elytra isn't, so a custom cape worn with one comes out as a slab. cut the
+	// elytra part of it (x 22-46, y 0-22 in 64x32 cape pixels) to the shape of the real wing, read off vanilla's own
+	// texture the way the glint recolor does, so a resource pack's elytra shape carries over.
+	// left alone if the png already has alpha in there, whoever drew it has shaped the wing themselves
+	private static void wings(NativeImage img) {
+		int s = img.getWidth() / 64;
+		for (int y = 0; y < 22 * s; y++) for (int x = 22 * s; x < 46 * s; x++) {
+			if (ARGB.alpha(img.getPixel(x, y)) != 255) return;
+		}
+		try (InputStream in = Minecraft.getInstance().getResourceManager().open(ELYTRA); NativeImage e = NativeImage.read(in)) {
+			int es = e.getWidth() / 64;
+			for (int y = 0; y < 22 * s; y++) for (int x = 22 * s; x < 46 * s; x++) {
+				if (ARGB.alpha(e.getPixel(x / s * es + es / 2, y / s * es + es / 2)) == 0) img.setPixel(x, y, 0);
+			}
+		} catch (IOException ex) {
+			Shrike.LOG.warn("no elytra texture to shape the cape with: {}", ex.getMessage());
+		}
 	}
 }
