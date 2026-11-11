@@ -1,5 +1,0 @@
-{
-  "providers": [
-    { "type": "bitmap", "file": "kestrel:font/badge.png", "ascent": 7, "height": 8, "chars": ["\ue000\ue001\ue002\ue003"] }
-  ]
-}

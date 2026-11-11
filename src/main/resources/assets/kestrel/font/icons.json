@@ -1,5 +1,0 @@
-{
-  "providers": [
-    { "type": "ttf", "file": "kestrel:lucide_icons.ttf", "size": 9, "oversample": 4.0, "shift": [0, 0.5] }
-  ]
-}

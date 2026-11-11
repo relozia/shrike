@@ -1,0 +1,5 @@
+{
+  "providers": [
+    { "type": "ttf", "file": "shrike:inter_semibold.ttf", "size": 13, "oversample": 2.0 }
+  ]
+}

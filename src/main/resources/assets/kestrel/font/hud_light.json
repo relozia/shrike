@@ -1,5 +1,0 @@
-{
-  "providers": [
-    { "type": "ttf", "file": "kestrel:inter_medium.ttf", "size": 14, "oversample": 2.0 }
-  ]
-}

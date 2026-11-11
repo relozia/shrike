@@ -1,0 +1,5 @@
+{
+  "providers": [
+    { "type": "ttf", "file": "shrike:material_icons.ttf", "size": 18, "oversample": 2.0 }
+  ]
+}

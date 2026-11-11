@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "id": "kestrel",
+  "id": "shrike",
   "version": "${version}",
-  "name": "Kestrel",
+  "name": "Shrike",
   "description": "A clean, configurable client mod. Right Shift opens the menu.",
   "authors": ["relozia"],
   "license": "GPL-3.0-or-later",
-  "icon": "assets/kestrel/icon.png",
+  "icon": "assets/shrike/icon.png",
   "environment": "client",
   "entrypoints": {
-    "client": ["io.github.relozia.kestrel.Kestrel"]
+    "client": ["io.github.relozia.shrike.Shrike"]
   },
-  "mixins": ["kestrel.mixins.json"],
+  "mixins": ["shrike.mixins.json"],
   "depends": {
     "fabricloader": ">=0.20.1",
     "fabric-api": "*",

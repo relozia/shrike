@@ -1,4 +1,4 @@
-# Kestrel
+# Shrike
 
 A mod for 26.2, I'l later change it into a client and add newer versions. Right Shift to open the the gui. ONLY 26.2
 
@@ -18,9 +18,9 @@ Approximately 90 modules. The menu has a search bar so it is quicker to search f
 
 ## Configuration
 
-`config/kestrel/capes` - To add a cape png using the vanilla cape format.
+`config/shrike/capes` - To add a cape png using the vanilla cape format.
 
-`config/kestrel/soundpacks` - To add key sound packs
+`config/shrike/soundpacks` - To add key sound packs
 
 These are only loaded once when starting the game so you have to restart to add them
 
@@ -32,7 +32,14 @@ There are 3 features that will request something from Windows, they run a PowerS
 - Desktop Notification - When mentioned whilst tabbed out.
 - Screenshot to Clipboard.
 
-These are disabled by default. They will do nothing on Linux/macOS. The script used for the Music Player is inside the jar in `assets/kestrel/media/media.ps1`. You can read the source
+These are disabled by default. They will do nothing on Linux/macOS. The script used for the Music Player is inside the jar in `assets/shrike/media/media.ps1`. You can read the source
+
+## Blacklisted Modules
+
+Some servers don't allow certain modules. Shrike pulls a list from [relozia/pubshrike](https://github.com/relozia/pubshrike)
+and disables anything the server you joined doesn't allow. You cant disable this
+
+The list is as good as we can still read the server's own rules as rules can change and we cant read the mind of server staff.
 
 ## Issues
 

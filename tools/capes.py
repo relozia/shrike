@@ -1,4 +1,4 @@
-# draws Kestrel's capes into vanilla's cape layout at 8x (512x256). needs Pillow. run from the repo root:
+# draws Shrike's capes into vanilla's cape layout at 8x (512x256). needs Pillow. run from the repo root:
 #   python tools/capes.py
 # layout, in 64x32 cape pixels: the cape box is 10x16x1 at (0,0), its outside (what people behind you see) is
 # x 1-11 y 1-17, the inside against your back x 12-22. the elytra box is 10x20x2 at (22,0) with its two big faces at
@@ -8,7 +8,7 @@ import time
 from PIL import Image, ImageDraw
 
 S = 8
-OUT = "src/main/resources/assets/kestrel/textures/cape/"
+OUT = "src/main/resources/assets/shrike/textures/cape/"
 RUST = (224, 112, 58)
 COAL = (20, 24, 31)
 INK = (13, 16, 21)

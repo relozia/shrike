@@ -5,7 +5,7 @@ plugins {
 version = "${project.mod_version}+${project.minecraft_version}"
 group = project.maven_group
 
-base { archivesName = 'kestrel' }
+base { archivesName = 'shrike' }
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -29,5 +29,5 @@ java {
 }
 
 jar {
-	from('LICENSE') { rename { "${it}_kestrel" } }
+	from('LICENSE') { rename { "${it}_shrike" } }
 }

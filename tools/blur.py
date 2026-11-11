@@ -5,7 +5,7 @@
 # ones instead of a loop. keep the crlf and the missing trailing newline or every file shows up dirty in git.
 import json
 
-OUT = "src/main/resources/assets/kestrel/post_effect/"
+OUT = "src/main/resources/assets/shrike/post_effect/"
 STEPS = 16
 
 

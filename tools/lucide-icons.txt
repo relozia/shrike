@@ -1,4 +1,4 @@
-# lucide glyphs bundled in assets/kestrel/font/lucide_icons.ttf
+# lucide glyphs bundled in assets/shrike/font/lucide_icons.ttf
 # rebuild after adding one (needs fonttools + lucide-static's font/lucide.ttf):
 #   grep -oE "^U.[0-9A-F]+" tools/lucide-icons.txt > codes.txt
 #   python -m fontTools.subset lucide.ttf --unicodes-file=codes.txt --output-file=lucide_icons.ttf --layout-features='' --no-hinting

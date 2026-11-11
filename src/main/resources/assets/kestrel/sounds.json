@@ -1,7 +1,0 @@
-{
-  "ui.toggle_on": { "sounds": ["kestrel:ui/toggle_on"] },
-  "ui.toggle_off": { "sounds": ["kestrel:ui/toggle_off"] },
-  "ui.open": { "sounds": ["kestrel:ui/open"] },
-  "ui.close": { "sounds": ["kestrel:ui/close"] },
-  "ui.click": { "sounds": ["kestrel:ui/click"] }
-}

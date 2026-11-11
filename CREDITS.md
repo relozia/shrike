@@ -1,6 +1,6 @@
 # credits
 
-Stuff Kestrel ships that someone else made. Thanks to all of them.
+Stuff Shrike ships that someone else made. Thanks to all of them.
 
 | what | by | license | used for |
 |---|---|---|---|
@@ -12,6 +12,6 @@ Stuff Kestrel ships that someone else made. Thanks to all of them.
 | [Mouse Clicks](https://freesound.org/people/Ezcah/sounds/208204/) | Ezcah | CC0 | default Mouse Pack, clicks 1 to 6 |
 | [mouse clicks](https://freesound.org/people/chestnutjam/sounds/399443/) | chestnutjam | CC0 | default Mouse Pack, clicks 7 to 14 |
 
-The OFL, ISC and Apache license texts are in `src/main/resources/assets/kestrel/licenses/` and inside the jar.
+The OFL, ISC and Apache license texts are in `src/main/resources/assets/shrike/licenses/` and inside the jar.
 
 Kenney's sounds are CC0 so credit isn't required, but they're great and deserve it. Trimmed and converted to mono ogg for Minecraft. The mouse clicks were cut into single clicks and level matched.
